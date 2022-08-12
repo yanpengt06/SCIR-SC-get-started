@@ -5,7 +5,7 @@
       <paths name="yptong@10.160.3.60:443">
         <serverdata>
           <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/code/a5" local="$PROJECT_DIR$/lab/a5" web="/" />
           </mappings>
         </serverdata>
       </paths>

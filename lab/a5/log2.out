@@ -1,0 +1,29 @@
+data has 418352 characters, 256 unique.
+number of parameters: 3323392
+0it [00:00, ?it/s]0it [00:00, ?it/s]
+Traceback (most recent call last):
+  File "src/run.py", line 152, in <module>
+    pred = utils.sample(model, x, 32, sample=False)[0]
+  File "/users12/yptong/anaconda3/envs/local_nmt/lib/python3.8/site-packages/torch/autograd/grad_mode.py", line 27, in decorate_context
+    return func(*args, **kwargs)
+  File "/users12/yptong/code/a5/src/utils.py", line 36, in sample
+    logits, _ = model(x_cond)
+  File "/users12/yptong/anaconda3/envs/local_nmt/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/users12/yptong/code/a5/src/model.py", line 100, in forward
+    token_embeddings = self.tok_emb(idx) # each index maps to a (learnable) vector
+  File "/users12/yptong/anaconda3/envs/local_nmt/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/users12/yptong/anaconda3/envs/local_nmt/lib/python3.8/site-packages/torch/nn/modules/sparse.py", line 158, in forward
+    return F.embedding(
+  File "/users12/yptong/anaconda3/envs/local_nmt/lib/python3.8/site-packages/torch/nn/functional.py", line 2199, in embedding
+    return torch.embedding(weight, input, padding_idx, scale_grad_by_freq, sparse)
+RuntimeError: Expected all tensors to be on the same device, but found at least two devices, cpu and cuda:0! (when checking argument for argument index in method wrapper__index_select)
+usage: run.py [-h] [--reading_params_path READING_PARAMS_PATH]
+              [--writing_params_path WRITING_PARAMS_PATH]
+              [--finetune_corpus_path FINETUNE_CORPUS_PATH]
+              [--eval_corpus_path EVAL_CORPUS_PATH]
+              [--outputs_path OUTPUTS_PATH]
+              {pretrain,finetune,evaluate} {vanilla,synthesizer}
+              pretrain_corpus_path
+run.py: error: unrecognized arguments: predictions

@@ -1,0 +1,24 @@
+[nltk_data] Downloading package punkt to /users12/yptong/nltk_data...
+[nltk_data]   Unzipping tokenizers/punkt.zip.
+uniformly initialize parameters [-0.100000, +0.100000]
+use device: cuda:0
+Traceback (most recent call last):
+  File "run.py", line 367, in <module>
+    main()
+  File "run.py", line 359, in main
+    train(args)
+  File "run.py", line 162, in train
+    model = model.to(device)
+  File "/users12/yptong/anaconda3/envs/local_nmt/lib/python3.8/site-packages/torch/nn/modules/module.py", line 927, in to
+    return self._apply(convert)
+  File "/users12/yptong/anaconda3/envs/local_nmt/lib/python3.8/site-packages/torch/nn/modules/module.py", line 579, in _apply
+    module._apply(fn)
+  File "/users12/yptong/anaconda3/envs/local_nmt/lib/python3.8/site-packages/torch/nn/modules/module.py", line 579, in _apply
+    module._apply(fn)
+  File "/users12/yptong/anaconda3/envs/local_nmt/lib/python3.8/site-packages/torch/nn/modules/module.py", line 602, in _apply
+    param_applied = fn(param)
+  File "/users12/yptong/anaconda3/envs/local_nmt/lib/python3.8/site-packages/torch/nn/modules/module.py", line 925, in convert
+    return t.to(device, dtype if t.is_floating_point() or t.is_complex() else None, non_blocking)
+  File "/users12/yptong/anaconda3/envs/local_nmt/lib/python3.8/site-packages/torch/cuda/__init__.py", line 217, in _lazy_init
+    torch._C._cuda_init()
+RuntimeError: No CUDA GPUs are available
