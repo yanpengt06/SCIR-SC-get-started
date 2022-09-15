@@ -11,6 +11,20 @@ NLP & Sentiment Computing 学习文件管理，持续更新
     ├─a3
     ├─a4
     └─a5
+├─final-proj		细粒度情感分析项目
+│  │  datasets.py
+│  │  main.ipynb
+│  │  models.py
+│  │  preprocess.py
+│  │  tutils.py
+│  │  word_map.json
+│  │  
+│  ├─ckpt
+│  │      
+│  ├─data
+│  │  ├─ag_news   
+│  │  └─restaurant
+│  │              
 README.MD
 ```
 
