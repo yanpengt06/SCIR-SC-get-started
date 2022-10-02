@@ -35,3 +35,36 @@ class ReviewDataset(Dataset):
 
     def __len__(self) -> int:
         return len(self.sents)
+
+
+class DocDataset(Dataset):
+    """
+
+    """
+    def __init__(self, docs, labels, word_map, sent_limit, word_limit):
+        self.docs = docs
+        self.labels = labels
+        self.word_map = word_map
+        self.word_limit = word_limit
+        self.sent_limit = sent_limit
+
+    def __getitem__(self, idx: str) -> Tuple[torch.LongTensor, torch.LongTensor, torch.LongTensor, torch.LongTensor]:
+        """
+        encode and pad
+        @param idx:
+        @return:
+        """
+        doc = self.docs[idx]
+        word_padded = list(map(lambda s:
+            list(map(lambda w: self.word_map.get(w, self.word_map["<unk>"]) ,s)) + [0] * (self.word_limit - len(s))
+            ,doc))
+        sent_padded = word_padded + [[0] * self.word_limit] * (self.sent_limit - len(word_padded))
+        sents_per_doc = len(doc)
+        words_per_sent =  [len(s) for s in doc] + [0] * (self.sent_limit - sents_per_doc)
+
+        # shift label to [0,1,2,3]
+        return  torch.LongTensor(sent_padded), torch.LongTensor([self.labels[idx] + 2]), torch.LongTensor([sents_per_doc]),\
+                torch.LongTensor(words_per_sent)
+
+    def __len__(self):
+        return len(self.docs)
