@@ -6,13 +6,15 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 from datetime import datetime
 import torch.nn as nn
+from sklearn.metrics import f1_score
 
 
 def valid_and_save(valid_dataloader: DataLoader, device: torch.device, model, loss_fn, epoch: int, path: str) -> Tuple[
-    float, float]:
+    float, float, float]:
     """"""
     total_avg_loss = 0
     total_correct = 0
+    total_f1 = 0
 
     with torch.no_grad():
         for i, batch in tqdm(enumerate(valid_dataloader)):
@@ -29,6 +31,9 @@ def valid_and_save(valid_dataloader: DataLoader, device: torch.device, model, lo
             # print(loss)
             # calculate the accuracy
             pred_labels = torch.max(logits, dim=1)[1]
+            f1 = f1_score(labels.cpu(), pred_labels.cpu(), average="macro")
+            total_f1 += f1
+
             # print(pred_labels)
             correct = torch.eq(pred_labels, labels).sum().item()
             total_avg_loss += loss.item()
@@ -37,14 +42,25 @@ def valid_and_save(valid_dataloader: DataLoader, device: torch.device, model, lo
     # save to path specified
     torch.save(model, f"{path}/epoch{epoch}-{datetime.now().strftime('%m-%d-%Y-%H-%M-%S')}-ckpt.pth")
 
-    return total_avg_loss, total_correct
+    return total_avg_loss, total_correct, total_f1
 
 
-def valid_and_save_doc(valid_dataloader: DataLoader, device: torch.device, model, loss_fn, epoch: int, path: str) -> Tuple[
-    float, float]:
-    """"""
+def valid_and_save_doc(valid_dataloader: DataLoader, device: torch.device, model, loss_fn, epoch: int, path: str) -> \
+        Tuple[
+            float, float, float]:
+    """
+
+    @param valid_dataloader:
+    @param device:
+    @param model:
+    @param loss_fn:
+    @param epoch:
+    @param path:
+    @return:
+    """
     total_avg_loss = 0
     total_correct = 0
+    total_f1 = 0
 
     with torch.no_grad():
         for i, batch in tqdm(enumerate(valid_dataloader)):
@@ -53,7 +69,8 @@ def valid_and_save_doc(valid_dataloader: DataLoader, device: torch.device, model
             labels = labels.squeeze(-1).to(device)  # B
             # print("labels:")
             # print(labels)
-            logits, sent_alpha, word_alpha = model(docs, sents_per_doc.squeeze(-1).to(device), words_per_sent.to(device))
+            logits, sent_alpha, word_alpha = model(docs, sents_per_doc.squeeze(-1).to(device),
+                                                   words_per_sent.to(device))
             # print("logits:")
             # print(logits)
             loss = loss_fn(logits, labels)
@@ -65,11 +82,14 @@ def valid_and_save_doc(valid_dataloader: DataLoader, device: torch.device, model
             correct = torch.eq(pred_labels, labels).sum().item()
             total_avg_loss += loss.item()
             total_correct += correct
+            f1 = f1_score(labels.cpu(), pred_labels.cpu(), average='macro')  # one batch macro-f1 score
+            total_f1 += f1
 
     # save to path specified
     torch.save(model, f"{path}/epoch{epoch}-{datetime.now().strftime('%m-%d-%Y-%H-%M-%S')}-ckpt.pth")
 
-    return total_avg_loss, total_correct
+    return total_avg_loss, total_correct, total_f1
+
 
 def train_one_epoch(train_loader, device: torch.device, model, loss_fn, optimizer, epoch, use_wandb=False):
     """
@@ -139,7 +159,7 @@ def train_one_epoch_doc(train_loader, device: torch.device, model, loss_fn, opti
     """
 
     for i, batch in tqdm(enumerate(train_loader)):
-        docs, labels, sents_per_doc, words_per_sent = batch # sents_per_doc: B x 1, words_per_sent: B x max_sent_len
+        docs, labels, sents_per_doc, words_per_sent = batch  # sents_per_doc: B x 1, words_per_sent: B x max_sent_len
         # print(sents_per_doc.shape)
         # print(words_per_sent.shape)
         docs = docs.to(device)
@@ -181,7 +201,6 @@ def train_one_epoch_doc(train_loader, device: torch.device, model, loss_fn, opti
                 "train/acc": acc,
                 "train/gnorm": gnorm.item()
             })
-
 
 
 def sequence_mask(X, valid_len, value=0):

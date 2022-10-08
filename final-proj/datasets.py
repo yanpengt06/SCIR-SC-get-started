@@ -63,6 +63,9 @@ class DocDataset(Dataset):
         words_per_sent =  [len(s) for s in doc] + [0] * (self.sent_limit - sents_per_doc)
 
         # shift label to [0,1,2,3]
+        if np.isnan(self.labels[idx]):
+            return torch.LongTensor(sent_padded), torch.LongTensor([-5]), \
+                   torch.LongTensor([sents_per_doc]), torch.LongTensor(words_per_sent)
         return  torch.LongTensor(sent_padded), torch.LongTensor([self.labels[idx] + 2]), torch.LongTensor([sents_per_doc]),\
                 torch.LongTensor(words_per_sent)
 
